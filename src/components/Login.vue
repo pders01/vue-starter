@@ -52,7 +52,7 @@ export default {
         async handleSubmit() {
             if (this.username && this.password) {
                 const response = await fetch(
-                    "https://gin-production-fd22.up.railway.app/",
+                    "https://gin-production-fd22.up.railway.app/login",
                     {
                         mode: "cors",
                         method: "POST",
