@@ -1,10 +1,14 @@
 <template>
-    <div class="hero bg-base-200 min-h-screen">
+    <div class="hero absolute left-0 top-0 z-50 min-h-screen bg-base-200">
         <div class="hero-content flex-col lg:flex-row-reverse">
             <div
-                class="card bg-base-100 w-full max-w-sm flex-shrink-0 shadow-2xl"
+                class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl"
             >
-                <form @submit.prevent="handleSubmit" class="card-body">
+                <form
+                    @submit.prevent="handleLogin"
+                    target="_self"
+                    class="card-body"
+                >
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Username</span>
@@ -49,7 +53,7 @@ export default {
         };
     },
     methods: {
-        async handleSubmit() {
+        async handleLogin() {
             if (this.username && this.password) {
                 const response = await fetch(
                     "https://gin-production-fd22.up.railway.app/login",
@@ -64,7 +68,12 @@ export default {
                 );
 
                 if (response.ok) {
-                    this.$emit("authenticated");
+                    const result = await response.json();
+                    const { token } = result;
+
+                    sessionStorage.setItem("jwt_token", token);
+
+                    this.$router.push("/");
                 }
             }
         },

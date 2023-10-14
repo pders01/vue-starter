@@ -10,7 +10,7 @@
                 <input
                     type="url"
                     placeholder="e.g. https://news.ycombinator.com/rss"
-                    class="input input-bordered join-item w-full max-w-xs"
+                    class="input join-item input-bordered w-full max-w-xs"
                     id="feed-url"
                     name="feed-url"
                     v-model="feedUrl"
@@ -31,8 +31,26 @@ export default {
         };
     },
     methods: {
-        handleSubmit() {
-            console.log("Form submitted!", this.feedUrl);
+        async handleSubmit() {
+            if (this.feedUrl) {
+                const response = await fetch(
+                    "https://gin-production-fd22.up.railway.app/feeds",
+                    {
+                        mode: "cors",
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            url: this.feedUrl,
+                        }),
+                    },
+                );
+
+                if (response.ok) {
+                    this.$emit("added");
+                }
+            }
         },
     },
 };
