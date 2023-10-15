@@ -1,6 +1,7 @@
 <template>
     <div class="prose">
         <h1>rss</h1>
+        <h2>Welcome back, {{ user.name }} 👋</h2>
         <p>
             Looks like you haven't added any feeds yet,
             <a href="/#feed-url">add</a> your first one!
@@ -24,22 +25,71 @@
 </template>
 
 <script lang="ts">
+import { ref } from "vue";
+
+type User = {
+    name?: string,
+}
+
 export default {
     data() {
         return {
             feedUrl: "",
+            user: {} as User,
+        };
+    },
+    async setup() {
+        const token = sessionStorage.getItem("jwt_token");
+        if (!token) {
+            return;
+        }
+        
+        const response = await fetch(
+            "https://gin-production-fd22.up.railway.app/private/me",
+            {
+                mode: "cors",
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+        
+        let user;
+        if (response.ok) {
+            const result = await response.json();
+            user = ref({
+                name: result.user
+            })
+        }
+
+        if (!user) {
+            user = ref({})
+        }
+
+        return {
+            user,
         };
     },
     methods: {
         async handleSubmit() {
             if (this.feedUrl) {
+                const token = sessionStorage.getItem("jwt_token");
+                if (!token) {
+                    return;
+                }
+
                 const response = await fetch(
-                    "https://gin-production-fd22.up.railway.app/feeds",
+                    "https://gin-production-fd22.up.railway.app/private/feeds",
                     {
                         mode: "cors",
                         method: "POST",
+                        credentials: "include",
                         headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`,
+
                         },
                         body: JSON.stringify({
                             url: this.feedUrl,

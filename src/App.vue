@@ -6,7 +6,9 @@
                 class="drawer-content flex flex-col items-center justify-center"
             >
                 <section class="p-8">
-                    <RouterView />
+                    <Suspense>
+                        <RouterView />
+                    </Suspense>
                 </section>
                 <label
                     for="drawer"
@@ -26,36 +28,26 @@
                     <li class="text-xl">
                         <router-link to="/" class="">rss</router-link>
                     </li>
-                    <li class="menu-title">Feeds</li>
-                    <li class="absolute bottom-4"><a @click.stop="handleLogout" class="button button-ghost"
-                    >Logout</a
-                ></li>
+                    <Suspense>
+                        <Feeds />
+                    </Suspense>
+                    <li class="absolute bottom-4">
+                        <a
+                            @click.stop="handleLogout"
+                            class="button button-ghost"
+                            >Logout</a
+                        >
+                    </li>
                 </ul>
-                
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-export default {
-    setup() {
-        const token = sessionStorage.getItem("jwt_token");
-        if (!token) {
-            return;
-        }
+import Feeds from "./components/Feeds.vue"
 
-        fetch("https://gin-production-fd22.up.railway.app/private/me", {
-            mode: "cors",
-            method: "GET",
-            credentials: "include",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((result) => console.log(result));
-    },
+export default {
     methods: {
         async handleLogout() {
             const response = await fetch(
@@ -73,5 +65,8 @@ export default {
             }
         },
     },
+    components: {
+        Feeds,
+    }
 };
 </script>

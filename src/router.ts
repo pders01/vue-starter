@@ -47,6 +47,7 @@ async function isAuthenticated() {
     const response = await fetch("https://gin-production-fd22.up.railway.app/private/status", {
         mode: "cors",
         method: "GET",
+        credentials: "include",
         headers: {
             "Authorization": `Bearer ${token}`,
         }
